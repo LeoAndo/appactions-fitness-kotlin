@@ -33,7 +33,7 @@ android {
     compileSdkVersion 31
 
     defaultConfig {
-        applicationId "PUT_YOUR_APPLICATION_ID_HERE"
+        applicationId "com.leoleo.android.fitactions"
         minSdkVersion 21
         targetSdkVersion 31
         versionCode 2
