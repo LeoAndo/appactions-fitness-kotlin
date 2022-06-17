@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+package com.devrel.android.fitactions
 
 import android.app.assist.AssistContent
 import android.content.Intent
