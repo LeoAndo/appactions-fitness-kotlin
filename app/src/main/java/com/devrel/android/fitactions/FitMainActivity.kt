@@ -124,7 +124,12 @@ class FitMainActivity :
      * @receiver the intent to handle
      */
     private fun Intent.handleIntent() {
-        showDefaultView()
+        when (action) {
+            // When the action is triggered by a deep-link, Intent.ACTION_VIEW will be used
+            Intent.ACTION_VIEW -> handleDeepLink(data)
+            // Otherwise start the app as you would normally do.
+            else -> showDefaultView()
+        }
     }
 
     // Add handleIntent function
@@ -196,6 +201,31 @@ class FitMainActivity :
                 addToBackStack(null)
             }
             commit()
+        }
+    }
+
+    // adb shell am start -a android.intent.action.VIEW -d "https://fit-actions.firebaseapp.com/start"
+    private fun handleDeepLink(data: Uri?) {
+        when (data?.path) {
+            DeepLink.START -> {
+                // Get the parameter defined as "exerciseType" and add it to the fragment arguments
+                val exerciseType = data.getQueryParameter(DeepLink.Params.ACTIVITY_TYPE).orEmpty()
+                val type = FitActivity.Type.find(exerciseType)
+                val arguments = Bundle().apply {
+                    putSerializable(FitTrackingFragment.PARAM_TYPE, type)
+                }
+
+                updateView(FitTrackingFragment::class.java, arguments)
+            }
+            DeepLink.STOP -> {
+                // Stop the tracking service if any and return to home screen.
+                stopService(Intent(this, FitTrackingService::class.java))
+                updateView(FitStatsFragment::class.java)
+            }
+            else -> {
+                // Path is not supported or invalid, start normal flow.
+                showDefaultView()
+            }
         }
     }
 }
